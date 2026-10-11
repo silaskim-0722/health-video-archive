@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>건강 영상 아카이브</title>
 <meta name="description" content="건강 관련 영상 아카이브 — 검색하고 바로 시청하세요.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="건강 영상 아카이브">
+<meta property="og:title" content="🌿 건강 영상 아카이브">
+<meta property="og:description" content="900여 편의 건강 영상을 검색하고 바로 시청하세요.">
+<meta property="og:image" content="https://silaskim-0722.github.io/health-video-archive/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://silaskim-0722.github.io/health-video-archive/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="🌿 건강 영상 아카이브">
+<meta name="twitter:description" content="900여 편의 건강 영상을 검색하고 바로 시청하세요.">
+<meta name="twitter:image" content="https://silaskim-0722.github.io/health-video-archive/og-image.jpg">
 <style>
   :root {
     --green: #1b8a5a;
@@ -131,9 +143,44 @@
   .notice {
     padding: 40px 24px; text-align: center; color: var(--muted); font-size: 14px; line-height: 1.8;
   }
+  /* password gate */
+  #gate {
+    position: fixed; inset: 0; z-index: 100;
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  #gate.hidden { display: none; }
+  .gate-card {
+    background: #fff; border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 360px;
+    text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .gate-card h2 { margin: 0 0 6px; font-size: 22px; }
+  .gate-card p { margin: 0 0 20px; font-size: 13px; color: var(--muted); }
+  .gate-card input {
+    width: 100%; padding: 13px 14px; font-size: 17px; text-align: center;
+    border: 1px solid var(--line); border-radius: 10px; outline: none; margin-bottom: 12px;
+    letter-spacing: 4px;
+  }
+  .gate-card input:focus { border-color: var(--green); }
+  .gate-card button {
+    width: 100%; padding: 13px; font-size: 16px; font-weight: 700; color: #fff;
+    background: var(--green); border: none; border-radius: 10px; cursor: pointer;
+  }
+  .gate-card button:hover { background: var(--green-dark); }
+  .gate-error { display: none; color: #b91c1c; font-size: 13px; margin-top: 10px; }
 </style>
 </head>
 <body>
+
+<div id="gate">
+  <div class="gate-card">
+    <h2>🌿 건강 영상 아카이브</h2>
+    <p>비밀번호를 입력해 주세요</p>
+    <input id="gatePw" type="password" inputmode="numeric" autocomplete="off" placeholder="••••" aria-label="비밀번호">
+    <button id="gateBtn">입장하기</button>
+    <div class="gate-error" id="gateError">비밀번호가 올바르지 않습니다.</div>
+  </div>
+</div>
 
 <header>
   <h1>🌿 건강 영상 아카이브</h1>
@@ -308,7 +355,33 @@ async function init() {
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
   applyFilters();
 }
-init();
+
+// 간단 입장 확인 (정식 보안이 아닌 가벼운 가림막입니다)
+const SITE_PASSWORD = "1004";
+function tryEnter() {
+  const input = $("gatePw");
+  if (input.value === SITE_PASSWORD) {
+    try { sessionStorage.setItem("archive_auth", "1"); } catch (e) {}
+    $("gate").classList.add("hidden");
+    init();
+  } else {
+    $("gateError").style.display = "block";
+    input.value = "";
+    input.focus();
+  }
+}
+(function boot() {
+  let authed = false;
+  try { authed = sessionStorage.getItem("archive_auth") === "1"; } catch (e) {}
+  if (authed) {
+    $("gate").classList.add("hidden");
+    init();
+  } else {
+    $("gateBtn").addEventListener("click", tryEnter);
+    $("gatePw").addEventListener("keydown", (e) => { if (e.key === "Enter") tryEnter(); });
+    setTimeout(() => $("gatePw").focus(), 100);
+  }
+})();
 </script>
 </body>
 </html>
