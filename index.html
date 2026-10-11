@@ -151,11 +151,14 @@
   }
   #gate.hidden { display: none; }
   .gate-card {
-    background: #fff; border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 360px;
+    background: #fff; border-radius: 16px; padding: 40px 32px; width: 100%; max-width: 380px;
     text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   }
-  .gate-card h2 { margin: 0 0 6px; font-size: 22px; }
-  .gate-card p { margin: 0 0 20px; font-size: 13px; color: var(--muted); }
+  .gate-mark { font-size: 40px; margin-bottom: 10px; }
+  .gate-card h2 { margin: 0 0 10px; font-size: 24px; letter-spacing: -0.5px; }
+  .gate-sub { margin: 0; font-size: 15px; line-height: 1.7; color: var(--green-dark); font-weight: 700; }
+  .gate-line { width: 44px; height: 3px; background: var(--green); border-radius: 2px; margin: 18px auto; opacity: 0.5; }
+  .gate-notice { margin: 0 0 22px; font-size: 13px; line-height: 1.8; color: var(--muted); }
   .gate-card input {
     width: 100%; padding: 13px 14px; font-size: 17px; text-align: center;
     border: 1px solid var(--line); border-radius: 10px; outline: none; margin-bottom: 12px;
@@ -174,8 +177,11 @@
 
 <div id="gate">
   <div class="gate-card">
-    <h2>🌿 건강 영상 아카이브</h2>
-    <p>비밀번호를 입력해 주세요</p>
+    <div class="gate-mark">🌿</div>
+    <h2>건강 영상 아카이브</h2>
+    <p class="gate-sub">허벌라이프 코치를 위한<br>건강 영상 데이터베이스</p>
+    <div class="gate-line"></div>
+    <p class="gate-notice">정식 멤버 회원 전용 공간입니다<br>비밀번호를 입력해 주세요</p>
     <input id="gatePw" type="password" inputmode="numeric" autocomplete="off" placeholder="••••" aria-label="비밀번호">
     <button id="gateBtn">입장하기</button>
     <div class="gate-error" id="gateError">비밀번호가 올바르지 않습니다.</div>
