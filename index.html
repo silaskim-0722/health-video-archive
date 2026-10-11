@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>건강 영상 아카이브</title>
+<meta name="description" content="건강 관련 영상 아카이브 — 검색하고 바로 시청하세요.">
+<style>
+  :root {
+    --green: #1b8a5a;
+    --green-dark: #136845;
+    --bg: #f4f7f5;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: var(--bg); color: var(--text);
+  }
+  header {
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: #fff; padding: 36px 20px 28px; text-align: center;
+  }
+  header h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: -0.5px; }
+  header p { margin: 0 0 20px; opacity: 0.92; font-size: 14px; }
+  .search-wrap { max-width: 620px; margin: 0 auto; position: relative; }
+  .search-wrap input {
+    width: 100%; padding: 14px 48px 14px 18px; font-size: 16px;
+    border: none; border-radius: 999px; outline: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  }
+  .search-wrap .icon {
+    position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+    font-size: 18px; pointer-events: none;
+  }
+  .toolbar {
+    max-width: 1180px; margin: 0 auto; padding: 16px 20px 0;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    justify-content: space-between;
+  }
+  .toolbar .count { color: var(--muted); font-size: 14px; }
+  .toolbar .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  select, .check {
+    font-size: 14px; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 8px; background: #fff; color: var(--text);
+  }
+  .check { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+  .grid {
+    max-width: 1180px; margin: 0 auto; padding: 18px 20px 8px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px;
+  }
+  .card {
+    background: var(--card); border-radius: 12px; overflow: hidden; cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08); transition: transform .15s, box-shadow .15s;
+    display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+  .thumb { position: relative; aspect-ratio: 16/9; background: #111; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .badge {
+    position: absolute; top: 8px; left: 8px; font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px; color: #fff; background: rgba(0,0,0,0.65);
+  }
+  .badge.private { background: #b91c1c; }
+  .badge.public { background: #1d4ed8; }
+  .card-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card-title {
+    font-size: 15px; font-weight: 700; line-height: 1.45; margin: 0;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .card-meta { font-size: 12px; color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+  .tag {
+    font-size: 11px; color: var(--green-dark); background: #e7f4ed;
+    padding: 2px 8px; border-radius: 999px;
+  }
+  .more-wrap { text-align: center; padding: 22px 0 10px; }
+  .more-wrap button {
+    font-size: 15px; padding: 12px 34px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--green); background: #fff; color: var(--green-dark); font-weight: 700;
+  }
+  .more-wrap button:hover { background: var(--green); color: #fff; }
+  .empty { text-align: center; color: var(--muted); padding: 60px 20px; font-size: 15px; }
+  footer {
+    text-align: center; color: var(--muted); font-size: 12px; padding: 26px 20px 40px;
+  }
+  /* modal */
+  .modal-back {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 50;
+    display: none; align-items: flex-start; justify-content: center;
+    padding: 40px 16px; overflow-y: auto;
+  }
+  .modal-back.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 14px; max-width: 860px; width: 100%;
+    overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  .player { aspect-ratio: 16/9; background: #000; }
+  .player iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .modal-body { padding: 20px 22px 24px; }
+  .modal-body h2 { margin: 0 0 8px; font-size: 19px; line-height: 1.5; }
+  .modal-meta { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .modal-desc { font-size: 14px; line-height: 1.75; white-space: pre-wrap; word-break: break-word; }
+  .modal-tags { margin: 14px 0 4px; }
+  .transcript-toggle {
+    margin-top: 14px; font-size: 13px; color: var(--green-dark); font-weight: 700;
+    background: none; border: none; cursor: pointer; padding: 0;
+  }
+  .transcript {
+    display: none; margin-top: 10px; font-size: 13px; line-height: 1.8; color: #374151;
+    background: #f9fafb; border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 14px; max-height: 260px; overflow-y: auto; white-space: pre-wrap;
+  }
+  .transcript.open { display: block; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .btn {
+    font-size: 14px; font-weight: 700; padding: 10px 18px; border-radius: 8px;
+    text-decoration: none; display: inline-block; cursor: pointer;
+  }
+  .btn-primary { background: var(--green); color: #fff; border: 1px solid var(--green); }
+  .btn-ghost { background: #fff; color: var(--text); border: 1px solid var(--line); }
+  .modal-close {
+    position: sticky; top: 0; float: right; margin: 10px 10px 0 0; z-index: 2;
+    width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+    background: rgba(0,0,0,0.55); color: #fff; font-size: 17px; line-height: 1;
+  }
+  .notice {
+    padding: 40px 24px; text-align: center; color: var(--muted); font-size: 14px; line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 건강 영상 아카이브</h1>
+  <p>제목·설명·자막까지 검색하고, 클릭 한 번으로 바로 시청하세요.</p>
+  <div class="search-wrap">
+    <input id="q" type="search" placeholder="검색어를 입력하세요 (예: 혈압, 수면, 장 건강)" autocomplete="off">
+    <span class="icon">🔍</span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="count" id="count"></div>
+  <div class="controls">
+    <label class="check"><input type="checkbox" id="playableOnly" checked> 재생 가능한 영상만</label>
+    <select id="sort">
+      <option value="new">최신순</option>
+      <option value="old">오래된순</option>
+      <option value="title">제목순</option>
+    </select>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:none">검색 결과가 없습니다. 다른 검색어로 시도해 보세요.</div>
+<div class="more-wrap"><button id="more" style="display:none">더 보기</button></div>
+
+<footer id="footer"></footer>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modalClose" aria-label="닫기">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const PAGE = 48;
+let videos = [];
+let filtered = [];
+let shown = 0;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const norm = (s) => String(s ?? "").toLowerCase().replace(/\s+/g, "");
+const playable = (v) => v.privacy === "unlisted" || v.privacy === "public";
+
+function privacyBadge(v) {
+  if (v.privacy === "private") return '<span class="badge private">비공개</span>';
+  if (v.privacy === "public") return '<span class="badge public">공개</span>';
+  return "";
+}
+
+function cardHTML(v, i) {
+  const tags = (v.tags || []).slice(0, 3).map((t) => `<span class="tag">${esc(t)}</span>`).join("");
+  return `<article class="card" data-i="${i}" tabindex="0" role="button" aria-label="${esc(v.title)}">
+    <div class="thumb">
+      <img loading="lazy" src="${esc(v.thumbnail)}" alt="">
+      ${privacyBadge(v)}
+    </div>
+    <div class="card-body">
+      <h3 class="card-title">${esc(v.title)}</h3>
+      <div class="card-meta">${esc(v.date || "")}</div>
+      <div class="tags">${tags}</div>
+    </div>
+  </article>`;
+}
+
+function render(reset) {
+  const grid = $("grid");
+  if (reset) { grid.innerHTML = ""; shown = 0; }
+  const next = filtered.slice(shown, shown + PAGE);
+  grid.insertAdjacentHTML("beforeend", next.map((v, k) => cardHTML(v, shown + k)).join(""));
+  shown += next.length;
+  $("more").style.display = shown < filtered.length ? "" : "none";
+  $("empty").style.display = filtered.length === 0 ? "" : "none";
+  $("count").textContent = `총 ${videos.length}개 중 ${filtered.length}개`;
+}
+
+function applyFilters() {
+  const q = norm($("q").value);
+  const onlyPlayable = $("playableOnly").checked;
+  filtered = videos.filter((v) => {
+    if (onlyPlayable && !playable(v)) return false;
+    if (!q) return true;
+    const hay = norm(v.title) + norm(v.description) + norm((v.tags || []).join(" ")) + norm(v.transcript);
+    return hay.includes(q);
+  });
+  const sort = $("sort").value;
+  filtered.sort((a, b) =>
+    sort === "old" ? (a.date < b.date ? -1 : 1) :
+    sort === "title" ? a.title.localeCompare(b.title, "ko") :
+    (a.date > b.date ? -1 : 1));
+  render(true);
+}
+
+function openModal(v) {
+  const tags = (v.tags || []).map((t) => `<span class="tag">${esc(t)}</span>`).join("");
+  const player = playable(v)
+    ? `<div class="player"><iframe src="https://www.youtube.com/embed/${esc(v.videoId)}?autoplay=1&rel=0"
+         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+         allowfullscreen title="${esc(v.title)}"></iframe></div>`
+    : `<div class="notice">이 영상은 현재 <b>비공개</b> 상태라서<br>이 페이지에서 재생할 수 없습니다.<br>채널 소유자에게 공개 전환을 요청해 주세요.</div>`;
+  $("modalContent").innerHTML = `
+    ${player}
+    <div class="modal-body">
+      <h2>${esc(v.title)}</h2>
+      <div class="modal-meta">${esc(v.date || "")} · ${v.privacy === "public" ? "공개" : v.privacy === "private" ? "비공개" : "일부공개"}</div>
+      ${v.description ? `<div class="modal-desc">${esc(v.description)}</div>` : ""}
+      ${tags ? `<div class="tags modal-tags">${tags}</div>` : ""}
+      ${v.transcript ? `<button class="transcript-toggle" id="tsToggle">📝 자막 전문 보기</button>
+        <div class="transcript" id="tsBody">${esc(v.transcript)}</div>` : ""}
+      <div class="modal-actions">
+        <a class="btn btn-primary" href="${esc(v.url)}" target="_blank" rel="noopener">▶ YouTube에서 보기</a>
+        <button class="btn btn-ghost" id="modalCloseBtn">닫기</button>
+      </div>
+    </div>`;
+  $("modalBack").classList.add("open");
+  document.body.style.overflow = "hidden";
+  const t = $("tsToggle");
+  if (t) t.onclick = () => {
+    const b = $("tsBody");
+    b.classList.toggle("open");
+    t.textContent = b.classList.contains("open") ? "📝 자막 전문 닫기" : "📝 자막 전문 보기";
+  };
+  $("modalCloseBtn").onclick = closeModal;
+}
+
+function closeModal() {
+  $("modalContent").innerHTML = "";
+  $("modalBack").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+async function init() {
+  try {
+    const man = await fetch("data/manifest.json", { cache: "no-store" });
+    if (!man.ok) throw new Error("manifest load failed");
+    const { parts } = await man.json();
+    const chunks = await Promise.all(
+      Array.from({ length: parts }, (_, i) =>
+        fetch(`data/part-${String(i).padStart(2, "0")}.json`, { cache: "no-store" })
+          .then((r) => { if (!r.ok) throw new Error("part load failed"); return r.json(); })
+      )
+    );
+    videos = chunks.flat();
+  } catch (e) {
+    $("empty").style.display = "";
+    $("empty").textContent = "영상 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+    return;
+  }
+  const dates = videos.map((v) => v.date).filter(Boolean).sort();
+  $("footer").textContent =
+    `총 ${videos.length}개 영상 · 데이터 기준일 ${dates.length ? dates[dates.length - 1] : "-"}`;
+  let deb;
+  $("q").addEventListener("input", () => { clearTimeout(deb); deb = setTimeout(applyFilters, 180); });
+  $("sort").addEventListener("change", applyFilters);
+  $("playableOnly").addEventListener("change", applyFilters);
+  $("more").addEventListener("click", () => render(false));
+  $("grid").addEventListener("click", (e) => {
+    const card = e.target.closest(".card");
+    if (card) openModal(filtered[+card.dataset.i]);
+  });
+  $("grid").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const card = e.target.closest(".card");
+      if (card) openModal(filtered[+card.dataset.i]);
+    }
+  });
+  $("modalClose").addEventListener("click", closeModal);
+  $("modalBack").addEventListener("click", (e) => { if (e.target.id === "modalBack") closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+  applyFilters();
+}
+init();
+</script>
+</body>
+</html>
