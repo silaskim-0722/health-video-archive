@@ -30,6 +30,12 @@ DATA_DIR = os.environ.get("DATA_DIR", "data")
 TRANSCRIPT_LIMIT = int(os.environ.get("TRANSCRIPT_LIMIT", "2000"))
 TARGET_BYTES = int(os.environ.get("TARGET_BYTES", "112640"))
 
+# 개인/비건강 영상 제외 키워드 (제목+해시태그+설명에서 매칭, 쉼표로 추가 가능)
+# 건강·영양·허벌라이프 강의 위주로만 사이트에 올리기 위함
+EXCLUDE_KEYWORDS = [k.strip() for k in
+    os.environ.get("EXCLUDE_KEYWORDS",
+                   "신림친구들,친구모임,오산모임,베드민턴,폭우,소나기,폭설,결혼식,돌잔치").split(",") if k.strip()]
+
 YOUTUBE_RE = re.compile(
     r"(?:youtube\.com/(?:watch\?[^#]*v=|embed/|shorts/|live/|v/)|youtu\.be/)([A-Za-z0-9_-]{11})"
 )
@@ -81,14 +87,33 @@ def split_tags(raw):
     return tags
 
 
+def is_excluded(f):
+    """개인/비건강 영상 여부 (제목+해시태그+설명에서 제외 키워드 매칭)"""
+    if not EXCLUDE_KEYWORDS:
+        return False
+    hay = " ".join([str(f.get("title") or ""), str(f.get("hashtags") or ""),
+                    str(f.get("설명") or "")])
+    return any(kw in hay for kw in EXCLUDE_KEYWORDS)
+
+
 def convert(records):
-    videos, skipped = [], 0
-    for r in records:
+    videos, skipped, excluded, dup_removed = [], 0, 0, 0
+    seen_ids = set()
+    # 같은 영상은 가장 먼저 등록된 레코드만 유지
+    ordered = sorted(records, key=lambda r: r.get("createdTime") or "")
+    for r in ordered:
         f = r.get("fields", {})
         title = str(f.get("title") or "").strip()
         vid = video_id_from(f)
         if not title or not vid:
             skipped += 1
+            continue
+        if vid in seen_ids:
+            dup_removed += 1
+            continue
+        seen_ids.add(vid)
+        if is_excluded(f):
+            excluded += 1
             continue
         videos.append({
             "title": title,
@@ -102,7 +127,7 @@ def convert(records):
             "privacy": str(f.get("privacyStatus") or "").strip() or "unknown",
         })
     videos.sort(key=lambda v: v["date"], reverse=True)
-    return videos, skipped
+    return videos, {"skipped": skipped, "excluded": excluded, "dup_removed": dup_removed}
 
 
 def write_chunks(videos):
@@ -138,8 +163,10 @@ def main():
         sys.exit(1)
     records = fetch_all(token)
     print(f"fetched {len(records)} records from Airtable")
-    videos, skipped = convert(records)
-    print(f"converted {len(videos)} videos (skipped {skipped})")
+    videos, stats = convert(records)
+    print(f"converted {len(videos)} videos "
+          f"(skipped {stats['skipped']}, duplicates removed {stats['dup_removed']}, "
+          f"excluded personal {stats['excluded']})")
     n = write_chunks(videos)
     print(f"wrote {n} chunk files + manifest.json to {DATA_DIR}/")
 
