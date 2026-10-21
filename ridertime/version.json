@@ -1,5 +1,5 @@
 {
-  "version": "1.3.2",
-  "apkUrl": "https://expo.dev/artifacts/eas/ON0tJiClkbqZD78fRqrRy8o3XkxVWqvL9Ge2yZ4On44.apk",
-  "notes": "배민 열기 버튼 수정"
+  "version": "1.4.0",
+  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.0/RiderTime-1.4.0.apk",
+  "notes": "사진으로 기록 넣기, 추천 카드 배경 9종, 휴식 길이 바로 선택, 같은 날 총 운행시간 이어보기, 거리 표기 개선"
 }
