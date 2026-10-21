@@ -1,5 +1,5 @@
 {
-  "version": "1.4.1",
-  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.1/RiderTime-1.4.1.apk",
-  "notes": "직접 고른 그림 9장을 추천 휴식시간 배경에 적용하고 안내 글자 가독성 개선"
+  "version": "1.4.2",
+  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.2/RiderTime-1.4.2.apk",
+  "notes": "주문 알림 오토바이 그림 교체, 사진 시간 읽기 개선, 같은 분의 여러 배달 보존 및 저장 전 날짜 확인"
 }
