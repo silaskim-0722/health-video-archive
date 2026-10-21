@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
-  "apkUrl": "https://expo.dev/artifacts/eas/uvsz2b8MRehDvu_axPTxE_FBZXrOCdeVDj2MmV9YqPY.apk",
-  "notes": "의견 보내기·업데이트 확인·기록 가져오기·GPS 5초"
+  "version": "1.2.0",
+  "apkUrl": "https://expo.dev/artifacts/eas/ysqZTTZ252h_HE3OxoeDpn2DGZBZgg4_XFOZZTiOqoQ.apk",
+  "notes": "주문 오면 진동+배너로 알림, 배민 열기 버튼"
 }
