@@ -1,5 +1,5 @@
 {
-  "version": "1.4.2",
-  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.2/RiderTime-1.4.2.apk",
-  "notes": "주문 알림 오토바이 그림 교체, 사진 시간 읽기 개선, 같은 분의 여러 배달 보존 및 저장 전 날짜 확인"
+  "version": "1.4.4",
+  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.4/RiderTime-1.4.4.apk",
+  "notes": "홈에서 일일 수입 직접 입력·수정, 통계에서 날짜별 수입·운행 시작/종료·거리·휴식 기록 보기. 사진 OCR과 기존 휴식 추천 문제는 이번 수정에 포함되지 않음."
 }
