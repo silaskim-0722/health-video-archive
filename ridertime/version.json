@@ -1,5 +1,5 @@
 {
-  "version": "1.4.4",
-  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.4/RiderTime-1.4.4.apk",
-  "notes": "홈에서 일일 수입 직접 입력·수정, 통계에서 날짜별 수입·운행 시작/종료·거리·휴식 기록 보기. 사진 OCR과 기존 휴식 추천 문제는 이번 수정에 포함되지 않음."
+  "version": "1.4.5",
+  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.5/RiderTime-1.4.5.apk",
+  "notes": "홈 하단 오늘의 수입과 그중 미션수입 입력, 통계 미션 구분. 오늘 돌아보기와 설정의 사진 기록 넣기·모든 기록 지우기 화면 제거. 기존 기록 유지, 휴식 추천 계산은 변경하지 않음."
 }
