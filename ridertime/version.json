@@ -1,5 +1,5 @@
 {
-  "version": "1.4.5",
-  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.5/RiderTime-1.4.5.apk",
-  "notes": "홈 하단 오늘의 수입과 그중 미션수입 입력, 통계 미션 구분. 오늘 돌아보기와 설정의 사진 기록 넣기·모든 기록 지우기 화면 제거. 기존 기록 유지, 휴식 추천 계산은 변경하지 않음."
+  "version": "1.4.6",
+  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.6/RiderTime-1.4.6.apk",
+  "notes": "라이더타임 화면에서 주문 팝업이 뜨면 약 2초 뒤 배민 자동 열기. 닫기·화면 이동 시 자동 전환 취소. 기존 운행·수입 기록 유지. 배민 앞화면 주문 감지와 휴식 추천 계산은 변경하지 않음."
 }
