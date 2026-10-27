@@ -1,5 +1,5 @@
 {
-  "version": "1.4.7",
-  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.7/RiderTime-1.4.7.apk",
-  "notes": "주문 팝업 배치와 오토바이 그림 로딩을 기다린 뒤 약 2초 후 배민으로 이동하도록 보강. 기존 기록 유지. 실제 휴대폰의 알림 미표시 증상 해결 여부는 확인 중."
+  "version": "1.4.8",
+  "apkUrl": "https://github.com/silaskim-0722/health-video-archive/releases/download/ridertime-v1.4.8/RiderTime-1.4.8.apk",
+  "notes": "주문 팝업 5초 표시 후 배민 자동 열기. 표시 준비 시 '배달이 왔어요' 세 번 음성 안내 설정. 닫기·화면 이동 시 남은 안내와 자동 이동 취소. 기존 운행·수입 기록 유지."
 }
